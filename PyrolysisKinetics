@@ -1,0 +1,1071 @@
+% Clear Windows
+
+clear
+
+clc
+
+% Import TG DATA
+
+ID10k=importdata("C:\Users\Administrator\Desktop\Kinetics\10k.txt")
+
+ID20k=importdata("C:\Users\Administrator\Desktop\Kinetics\20k.txt")
+
+ID30k=importdata("C:\Users\Administrator\Desktop\Kinetics\30k.txt")
+
+ID40k=importdata("C:\Users\Administrator\Desktop\Kinetics\40k.txt")
+ 
+IID10k=ID10k.data
+
+IID20k=ID20k.data
+
+IID30k=ID30k.data
+
+IID40k=ID40k.data
+
+% FRIEDMAN METHOD
+
+X(:,1)=IID10k(:,1)
+
+X(:,2)=IID10k(:,3)
+
+X(:,3)=IID20k(:,3)
+
+X(:,4)=IID30k(:,3)
+
+X(:,5)=IID40k(:,3)
+
+X(:,6)=IID10k(:,2)
+
+X(:,7)=IID20k(:,2)
+
+X(:,8)=IID30k(:,2)
+
+X(:,9)=IID40k(:,2)
+
+[p,q]=size(X)
+
+% Part1：通过插值计算出转化率为0.005-0.995对应的温度T（K）
+
+% D10K
+
+d10k=[X(:,1),X(:,2)];
+
+A=d10k;
+
+B(1,:)=A(1,:)
+
+for n=2:1:p-2
+
+B(n,:)=A(n,:)
+
+for m=1:1:n-1
+
+if A(n,2)>A(m,2) 
+
+B(n,:)=0
+
+end
+
+end
+
+end
+
+B(all(B==0,2),:)=[]
+
+B1=B(:,1)
+
+B2=B(:,2)
+
+C1=B1+273.15;
+
+C2=(max(B2)-B2)/(max(B2)-min(B2));
+
+C=[C2,C1]
+
+D=sort(C);
+
+[temp I]=unique(D(:,1), 'first');
+
+E=D(I,:)
+
+E1=E(:,1)
+
+E2=E(:,2)
+
+
+E1i=0.01:0.01:0.99;
+
+E2i=interp1(E1,E2,E1i, 'pchip');
+
+X10=[E1i;E2i]';
+
+clearvars -except X X10 p;
+
+d20k=[X(:,1),X(:,3)];
+
+% D20K
+
+A=d20k;
+
+B(1,:)=A(1,:)
+
+for n=2:1:p-2
+
+B(n,:)=A(n,:)
+
+for m=1:1:n-1
+
+if A(n,2)>A(m,2) 
+
+B(n,:)=0
+
+end
+
+end
+
+end
+
+B(all(B==0,2),:)=[]
+
+B1=B(:,1)
+
+B2=B(:,2)
+
+C1=B1+273.15;
+
+C2=(max(B2)-B2)/(max(B2)-min(B2));
+
+C=[C2,C1]
+
+D=sort(C);
+
+[temp I]=unique(D(:,1), 'first');
+
+E=D(I,:)
+
+E1=E(:,1)
+
+E2=E(:,2)
+
+E1i=0.01:0.01:0.99;
+
+E2i=interp1(E1,E2,E1i, 'pchip');
+
+X20=[E1i;E2i]';
+
+clearvars -except X X10 X20 p;
+
+% D30K
+
+d30k=[X(:,1),X(:,4)];
+
+A=d30k;
+
+B(1,:)=A(1,:)
+
+for n=2:1:p-2
+
+B(n,:)=A(n,:)
+
+for m=1:1:n-1
+
+if A(n,2)>A(m,2) 
+
+B(n,:)=0
+
+end
+
+end
+
+end
+
+B(all(B==0,2),:)=[]
+
+B1=B(:,1)
+
+B2=B(:,2)
+
+C1=B1+273.15;
+
+C2=(max(B2)-B2)/(max(B2)-min(B2));
+
+C=[C2,C1]
+
+D=sort(C);
+
+[temp I]=unique(D(:,1), 'first');
+
+E=D(I,:)
+
+E1=E(:,1)
+
+E2=E(:,2)
+
+E1i=0.01:0.01:0.99;
+
+E2i=interp1(E1,E2,E1i, 'pchip');
+
+X30=[E1i;E2i]';
+
+clearvars -except X X10 X20 X30 p;
+
+% D40K
+
+d40k=[X(:,1),X(:,5)];
+
+A=d40k;
+
+B(1,:)=A(1,:)
+
+for n=2:1:p-2
+
+B(n,:)=A(n,:)
+
+for m=1:1:n-1
+
+if A(n,2)>A(m,2) 
+
+B(n,:)=0
+
+end
+
+end
+
+end
+
+B(all(B==0,2),:)=[]
+
+B1=B(:,1)
+
+B2=B(:,2)
+
+C1=B1+273.15;
+
+C2=(max(B2)-B2)/(max(B2)-min(B2));
+
+C=[C2,C1]
+
+D=sort(C);
+
+[temp I]=unique(D(:,1), 'first');
+
+E=D(I,:)
+
+E1=E(:,1)
+
+E2=E(:,2)
+
+E1i=0.01:0.01:0.99;
+
+E2i=interp1(E1,E2,E1i, 'pchip');
+
+X40=[E1i;E2i]';
+
+clearvars -except X X10 X20 X30 X40
+
+% Part 1计算出的X10 X20 X30 X40第一列为转化率，第二列为相应的转化率对应的温度（单位K）。
+
+% Part 2：Friedman模拟计算
+
+% 2.1 Friedman模型绘制平行直线，求斜率和截距、活化能和R2
+
+Y10(:,1)=X10(:,1)
+
+Y20(:,1)=X20(:,1)
+
+Y30(:,1)=X30(:,1)
+
+Y40(:,1)=X40(:,1)
+
+Z10=polyfit(X(:,1),X(:,6),2)
+
+Z20=polyfit(X(:,1),X(:,7),2)
+
+Z30=polyfit(X(:,1),X(:,8),2)
+
+Z40=polyfit(X(:,1),X(:,9),2)
+
+for m=1:1:96
+
+Y10(m,2)=Z10(1,1)*(X10(m,2))^2+Z10(1,2)*(X10(m,2))+Z10(1,3)
+
+Y20(m,2)=Z20(1,1)*(X20(m,2))^2+Z20(1,2)*(X20(m,2))+Z20(1,3)
+
+Y30(m,2)=Z30(1,1)*(X30(m,2))^2+Z30(1,2)*(X30(m,2))+Z30(1,3)
+
+Y40(m,2)=Z40(1,1)*(X40(m,2))^2+Z40(1,2)*(X40(m,2))+Z40(1,3)
+
+end
+
+Q10=diff(Y10)
+
+Q20=diff(Y20)
+
+Q30=diff(Y30)
+
+Q40=diff(Y40)
+
+FriColor=winter(96)
+
+for m=1:1:96
+
+A(m,:)=1./[X10(m,2),X20(m,2),X30(m,2),X40(m,2)]
+
+B(m,:)=[log(Q10(m,1)/Q10(m,2)),log(Q20(m,1)/Q20(m,2)),log(Q30(m,1)/Q30(m,2)),log(Q40(m,1)/Q40(m,2))]
+
+P(m,:)=polyfit(A(m,:),B(m,:),1)
+
+Corr=corrcoef(A(m,:),B(m,:))
+
+R2(m,1)=abs(Corr(1,2))
+
+Ea(m,:)=-8.314*P(m,1)/1000
+
+plot(A(m,:),polyval(P(m,:),A(m,:)),'Color', FriColor(m,:))
+
+colormap winter
+
+colorbar
+
+hold on
+
+% 参数估计误差
+
+cf = fit(A(m,:)',B(m,:)','poly1') 
+
+cf_coeff = coeffvalues(cf)
+
+cf_confint = confint(cf,0.80)
+
+afriedman_uncert(m,:) = (cf_confint(2,1) - cf_confint(1,1))/2
+
+bfriedman_uncert(m,:) = (cf_confint(2,2) - cf_confint(1,2))/2
+
+% 参数估计误差结束
+
+EaFRI_uncert(m,:) = afriedman_uncert(m,:)*8.314/1000
+
+PUT(m,:)=P(m,:)
+
+R2UT(m,1)=R2(m,1)
+
+EaUT(m,1)=Ea(m,:)
+
+C10(m,1)=0.01*m
+
+M10(m,1)=A(m,1)
+
+N10(m,1)=B(m,1)
+
+M20(m,1)=A(m,2)
+
+N20(m,1)=B(m,2)
+
+M30(m,1)=A(m,3)
+
+N30(m,1)=B(m,3)
+
+M40(m,1)=A(m,4)
+
+N40(m,1)=B(m,4)
+
+end
+
+FriedmanUT=[C10,PUT,R2UT,EaUT,EaFRI_uncert]
+
+% 2.2 绘制散点分布图，不同升温速率用不同的颜色标识
+
+h1=plot(M10,N10,'square','color',[0.1372 0.5725 1])
+
+hold on
+
+h2=plot(M20,N20,'pentagram','color',[0.8627 0.0745 0.2314])
+
+hold on
+
+h3=plot(M30,N30,'d','color',[0.0235 0.5569 0.5569])
+
+hold on
+
+h4=plot(M40,N40,'o','color',[1 0.4902 0.3059])
+
+hold on
+
+% 2.3 修改坐标轴和图例格式
+
+h5=legend([h1 h2 h3 h4],'10K/min','20K/min','30K/min','40K/min')
+
+set(h5,'box','off','FontSize',16,'FontName','Times New Roman')
+
+% 创建 xlabel
+xlabel({'1000/T/(1/K)'},'FontSize',18,'FontName','Times New Roman')
+
+% 创建 ylabel
+ylabel({'Log(dx/dt)/Log(1/s)'},'FontSize',18,'FontName','Times New Roman')
+
+set(gcf,'unit','centimeters','Position',[15 10 15 10])
+
+set(gca,'FontSize',16,'FontName','Times New Roman')
+
+% 2.4 输出最终的图形文件和数据文件
+
+print (gcf,'-dpng','-r300','C:\Users\Administrator\Desktop\Kinetics\Friedman-Analysis-99.png')
+
+clearvars -except X Q10 Q20 Q30 Q40 X10 X20 X30 X40 FriedmanUT afriedman_uncert bfriedman_uncert
+
+
+% Part 3. 寻找最概然机理函数
+
+for AlphaO=1:1:99
+
+Alpha=AlphaO/100
+
+% 1. 抛物线法则
+
+G1=Alpha^2
+F1=0.5*Alpha^(-1)
+
+% 2. Valensi 方程
+
+G2=Alpha+(1-Alpha)*log(1-Alpha)
+F2=[-log(1-Alpha)]^(-1)
+
+% 3. Jander 方程 （二维扩散，n=1/2）
+
+G3=[1-(1-Alpha)^(1/2)]^(1/2)
+F3=4*(1-Alpha)^(1/2)*[1-(1-Alpha)^(1/2)]^(1/2)
+
+% 4. Jander 方程 （二维扩散，n=1/2）
+
+G4=[1-(1-Alpha)^(1/2)]^2
+F4=(1-Alpha)^(1/2)*[1-(1-Alpha)^(1/2)]^(-1)
+
+% 5.  Jander 方程 （三维扩散，n=1/2）
+
+G5=[1-(1-Alpha)^(1/3)]^(1/2)
+F5=6*(1-Alpha)^(2/3)*[1-(1-Alpha)^(1/3)]^(1/2)
+
+% 6.  Jander 方程 （三维扩散，球形对称，n=2）
+
+G6=[1-(1-Alpha)^(1/3)]^2
+F6=3/2*(1-Alpha)^(2/3)*[1-(1-Alpha)^(1/3)]^(-1)
+
+% 7. G-B方程
+
+G7=1-2/3*Alpha-(1-Alpha)^(2/3)
+F7=3/2*[(1-Alpha)^(-1/3)-1]^(-1)
+
+
+% 8. 反 Jander方程
+
+G8=[(1+Alpha)^(1/3)-1]^2
+F8=3/2*(1+Alpha)^(2/3)*[(1+Alpha)^(1/3)-1]^(-1)
+
+
+% 9. Z-L-T方程
+
+G9=[(1-Alpha)^(-1/3)-1]^2
+F9=3/2*(1-Alpha)^(4/3)*[(1-Alpha)^(-1/3)-1]^(-1)
+
+% 10. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G10=[-log(1-Alpha)]^(1/4)
+F10=4*(1-Alpha)*[-log(1-Alpha)]^(3/4)
+
+% 11. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G11=[-log(1-Alpha)]^(1/3)
+F11=3*(1-Alpha)*[-log(1-Alpha)]^(2/3)
+
+% 12. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G12=[-log(1-Alpha)]^(2/5)
+F12=5/2*(1-Alpha)*[-log(1-Alpha)]^(3/5)
+
+% 13. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G13=[-log(1-Alpha)]^(1/2)
+F13=2*(1-Alpha)*[-log(1-Alpha)]^(1/2)
+
+% 14. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G14=[-log(1-Alpha)]^(2/3)
+F14=3/2*(1-Alpha)*[-log(1-Alpha)]^(1/3)
+
+% 15. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G15=[-log(1-Alpha)]^(3/4)
+F15=4/3*(1-Alpha)*[-log(1-Alpha)]^(1/4)
+
+% 16. Mample 单行法则，一级
+
+G16=-log(1-Alpha)
+F16=1-Alpha
+
+% 17. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G17=[-log(1-Alpha)]^(3/2)
+F17=2/3*(1-Alpha)*[-log(1-Alpha)]^(-1/2)
+
+% 18. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G18=[-log(1-Alpha)]^2
+F18=1/2*(1-Alpha)*[-log(1-Alpha)]^(-1)
+
+% 19. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G19=[-log(1-Alpha)]^3
+F19=1/3*(1-Alpha)*[-log(1-Alpha)]^(-2)
+
+% 20. Avrami-Erofeev方程（随机成核，随后生长。S形Alpha-t曲线）
+
+G20=[-log(1-Alpha)]^4
+F20=1/4*(1-Alpha)*[-log(1-Alpha)]^(-3)
+
+% 21. Mampel Power法则
+
+G21=Alpha^(1/4)
+F21=4*Alpha^(3/4)
+
+% 22. Mampel Power法则
+
+G22=Alpha^(1/3)
+F22=3*Alpha^(2/3)
+
+% 23. Mampel Power法则
+
+G23=Alpha^(1/2)
+F23=2*Alpha^(1/2)
+
+% 24. Mampel Power法则
+
+G24=Alpha
+F24=1
+
+% 25. Mampel Power法则
+
+G25=Alpha^(3/2)
+F25=2/3*Alpha^(-1/2)
+
+% 26. Mampel Power法则
+
+G26=Alpha^2
+F26=1/2*Alpha^(-1)
+
+% 27. 反应级数 n=1/4
+
+G27=1-(1-Alpha)^(1/4)
+F27=4*(1-Alpha)^(3/4)
+
+% 28. 收缩球形(体积)
+
+G28=1-(1-Alpha)^(1/3)
+F28=3*(1-Alpha)^(2/3)
+
+% 29. 收缩球形(体积)
+
+G29=3*[1-(1-Alpha)^(1/3)]
+F29=(1-Alpha)^(2/3)
+
+% 30. 收缩圆柱体(面积)
+
+G30=1-(1-Alpha)^(1/2)
+F30=2*(1-Alpha)^(1/2)
+
+% 31. 收缩圆柱体(面积)
+
+G31=2*[1-(1-Alpha)^(1/2)]
+F31=(1-Alpha)^(1/2)
+
+% 32. 反应级数
+
+G32=1-(1-Alpha)^2
+F32=1/2*(1-Alpha)^(-1)
+
+% 33. 反应级数
+
+G33=1-(1-Alpha)^3
+F33=1/3*(1-Alpha)^(-2)
+
+% 34. 反应级数
+
+G34=1-(1-Alpha)^4
+F34=1/4*(1-Alpha)^(-3)
+
+% 35. 反应级数
+
+G35=(1-Alpha)^(-1)
+F35=(1-Alpha)^2
+
+% 36. 反应级数
+
+G36=(1-Alpha)^(-1)-1
+F36=(1-Alpha)^2
+
+% 37. 反应级数
+
+G37=(1-Alpha)^(-1/2)
+F37=2*(1-Alpha)^(3/2)
+
+% 38. 指数法则n=1
+
+G38=log(Alpha)
+F38=Alpha
+
+% 39. 指数法则n=2
+
+G39=log(Alpha)^2
+F39=Alpha/2
+
+% 40. 三级,化学反应
+
+G40=(1-Alpha)^(-2)
+F40=1/2*(1-Alpha)^3
+
+
+for Beta=1:1:40
+
+G(AlphaO,Beta)=eval(['(','G',num2str(Beta),')'])
+
+F(AlphaO,Beta)=eval(['(','F',num2str(Beta),')'])
+
+end
+
+end
+
+% 计算理想判别矩阵
+
+H=F.*G
+
+for m=1:1:99
+
+for n=1:1:40
+
+Itemp(m,n)=H(m,n)/H(50,n)
+
+end
+
+end
+
+% 得到理想判别矩阵I
+
+for t=10:1:90
+
+I(t-9,:)=Itemp(t,:)
+
+end
+
+
+% 计算反应符合哪种机理函数
+
+for t=1:1:98
+
+V10(t,1)=(Q10(t,1))/(Q10(t,2))
+
+V20(t,1)=(Q20(t,1))/(Q20(t,2))
+
+V30(t,1)=(Q30(t,1))/(Q30(t,2))
+
+V40(t,1)=(Q40(t,1))/(Q40(t,2))
+
+end
+
+for t=1:1:98
+
+VV10(t,1)=V10(t,1)/V10(50,1)
+
+VV20(t,1)=V20(t,1)/V20(50,1)
+
+VV30(t,1)=V30(t,1)/V30(50,1)
+
+VV40(t,1)=V40(t,1)/V40(50,1)
+
+end
+
+for t=1:1:98
+
+VP10(t,1)=(X10(t,2)/X10(50,2))^2
+
+VP20(t,1)=(X20(t,2)/X20(50,2))^2
+
+VP30(t,1)=(X30(t,2)/X30(50,2))^2
+
+VP40(t,1)=(X40(t,2)/X40(50,2))^2
+
+end
+
+VVV10=VV10.*VP10
+VVV20=VV20.*VP20
+VVV30=VV30.*VP30
+VVV40=VV40.*VP40
+
+for t=10:1:90
+
+V1090(t-9,1)=VVV10(t,1)
+V2090(t-9,1)=VVV20(t,1)
+V3090(t-9,1)=VVV30(t,1)
+V4090(t-9,1)=VVV40(t,1)
+
+end
+
+VUT=0.25*(V1090+V2090+V3090+V4090)
+
+V2=repmat(VUT,1,40)
+
+Valu=V2-I
+
+DeUT=Valu.*Valu
+
+ValueUT=sum(DeUT)
+
+[J,K]=find(ValueUT==min(ValueUT))
+
+[R,S]=find(ValueUT<1)
+
+[~,Index]=sort(ValueUT)
+
+% 计算实验结果对应不同转化率的F值和G值
+
+Fexp(:,1)=F(:,K)
+
+Gexp(:,1)=G(:,K)
+
+
+% Part4. 计算指前因子A，Friedman
+
+for m=1:1:95
+
+Afriedman(m,1)=exp(FriedmanUT(m,3))/Fexp(m,1)
+
+end
+
+clearvars -except X FriedmanUT Afriedman ValueUT Index Fexp Gexp X10 X20 X30 X40 afriedman_uncert bfriedman_uncert
+
+% FWO METHOD
+
+figure
+
+% Part 2. FWO模拟计算
+
+% 2.1 FWO模型绘制平行直线，求斜率和截距、活化能和R2
+
+FWOColor=winter(99)
+
+for m=1:1:99
+
+A(m,:)=1./[X10(m,2),X20(m,2),X30(m,2),X40(m,2)]
+
+B(m,:)=[log10(10),log10(20),log10(30),log10(40)]
+
+P(m,:)=polyfit(A(m,:),B(m,:),1)
+
+Correlation=corrcoef(A(m,:),B(m,:))
+
+R2(m,:)=abs(Correlation(1,2))
+
+Ea(m,:)=-8.314/456.7*P(m,1)
+
+plot(A(m,:),polyval(P(m,:),A(m,:)),'color',FWOColor(m,:))
+
+hold on
+
+PUT(m,:)=P(m,:)
+
+R2UT(m,1)=R2(m,:)
+
+EaUT(m,1)=Ea(m,:)
+
+% 参数估计误差
+
+cf = fit(A(m,:)',B(m,:)','poly1') 
+
+cf_coeff = coeffvalues(cf)
+
+cf_confint = confint(cf,0.80)
+
+aFWO_uncert(m,:) = (cf_confint(2,1) - cf_confint(1,1))/2
+
+bFWO_uncert(m,:) = (cf_confint(2,2) - cf_confint(1,2))/2
+
+% 参数估计误差结束
+
+EaFWO_uncert(m,:) = aFWO_uncert(m,:)*(8.314/456.7)
+
+end
+
+colormap winter
+
+colorbar
+
+OFWUT=[X10,PUT,R2UT,EaUT,EaFWO_uncert]
+
+% 2.2 绘制散点分布图，不同升温速率用不同的颜色标识
+
+M10=1./X10(:,2)
+
+N10=log10(10)*ones(99,1)
+
+h1=plot(M10,N10,'square','color',[0.1372 0.5725 1])
+
+hold on
+
+M20=1./X20(:,2)
+
+N20=log10(20)*ones(99,1)
+
+h2=plot(M20,N20,'pentagram','color',[0.8627 0.0745 0.2314])
+
+hold on
+
+M30=1./X30(:,2)
+
+N30=log10(30)*ones(99,1)
+
+h3=plot(M30,N30,'d','color',[0.0235 0.5569 0.5569])
+
+hold on
+
+M40=1./X40(:,2)
+
+N40=log10(40)*ones(99,1)
+
+h4=plot(M40,N40,'o','color',[1 0.4902 0.3059])
+
+hold on
+
+% 2.3 修改坐标轴和图例格式
+
+h5=legend([h1 h2 h3 h4],'10K/min','20K/min','30K/min','40K/min')
+
+set(h5,'box','off','FontSize',16,'FontName','Times New Roman')
+
+% 创建 xlabel
+
+xlabel({'1000/T/(1/K)'},'FontSize',18,'FontName','Times New Roman')
+
+% 创建 ylabel
+
+ylabel({'Logβ/Log(K/min)'},'FontSize',18,'FontName','Times New Roman')
+
+set(gcf,'unit','centimeters','Position',[15 10 15 10])
+
+set(gca,'FontSize',16,'FontName','Times New Roman')
+
+% 2.4 输出最终的图形文件和数据文件
+
+print (gcf,'-dpng','-r300','C:\Users\Administrator\Desktop\Kinetics\FWO-Analysis-99.png')
+
+% Part 3. 计算指前因子A，FWO
+
+for m=1:1:95
+
+AOFW(m,1)=Gexp(m,1)*8.314*10^(OFWUT(m,4)+2.315)/OFWUT(m,6)
+
+end
+
+clearvars -except X FriedmanUT Afriedman ValueUT Index Fexp Gexp OFWUT AOFW X10 X20 X30 X40 afriedman_uncert bfriedman_uncert aFWO_uncert bFWO_uncert
+
+% KAS METHOD
+
+figure
+
+% 2.1 KAS模型绘制平行直线，求斜率和截距、活化能和R2
+
+KASColor=winter(99)
+
+for m=1:1:99
+
+A(m,:)=1./[X10(m,2),X20(m,2),X30(m,2),X40(m,2)]
+
+B(m,:)=[log(10)-2*log(X10(m,2)), log(20)-2*log(X20(m,2)), log(30)-2*log(X30(m,2)), log(40)-2*log(X40(m,2))]
+
+P(m,:)=polyfit(A(m,:),B(m,:),1)
+
+Correlation=corrcoef(A(m,:),B(m,:))
+
+R2(m,1)=abs(Correlation(1,2))
+
+Ea(m,:)=-8.314/1000*P(m,1)
+
+plot(A(m,:),polyval(P(m,:),A(m,:)),'Color',KASColor(m,:))
+
+hold on
+
+PUT(m,:)=P(m,:)
+
+R2UT(m,1)=R2(m,1)
+
+EaUT(m,1)=Ea(m,1)
+
+N10(m,1)=log(10)-2*log(X10(m,2))
+
+N20(m,1)=log(20)-2*log(X20(m,2))
+
+N30(m,1)=log(30)-2*log(X30(m,2))
+
+N40(m,1)=log(40)-2*log(X40(m,2))
+
+% 参数估计误差
+
+cf = fit(A(m,:)',B(m,:)','poly1') 
+
+cf_coeff = coeffvalues(cf)
+
+cf_confint = confint(cf,0.80)
+
+aKAS_uncert(m,:) = (cf_confint(2,1) - cf_confint(1,1))/2
+
+bKAS_uncert(m,:) = (cf_confint(2,2) - cf_confint(1,2))/2
+
+% 参数估计误差结束
+
+EaKAS_uncert(m,:) = aKAS_uncert(m,:)*(8.314/1000)
+
+end
+
+colormap winter
+
+colorbar
+
+KASUT=[X10,PUT,R2UT,EaUT,EaKAS_uncert]
+
+% 2.2 绘制散点分布图，不同升温速率用不同的颜色标识
+
+M10=1./X10(:,2)
+
+h1=plot(M10,N10,'square','color',[0.1372 0.5725 1])
+
+hold on
+
+M20=1./X20(:,2)
+
+h2=plot(M20,N20,'pentagram','color',[0.8627 0.0745 0.2314])
+
+hold on
+
+M30=1./X30(:,2)
+
+h3=plot(M30,N30,'d','color',[0.0235 0.5569 0.5569])
+
+hold on
+
+M40=1./X40(:,2)
+
+h4=plot(M40,N40,'o','color',[1 0.4902 0.3059])
+
+hold on
+
+% 2.3 修改坐标轴和图例格式
+
+h5=legend([h1 h2 h3 h4],'10K/min','20K/min','30K/min','40K/min')
+
+set(h5,'box','off','FontSize',16,'FontName','Times New Roman')
+
+% 创建 xlabel
+
+xlabel({'1000/T/(1/K)'},'FontSize',18,'FontName','Times New Roman')
+
+% 创建 ylabel
+
+ylabel({'Log(β/T^2)/Log(1/(K min)'},'FontSize',18,'FontName','Times New Roman')
+
+set(gcf,'unit','centimeters','Position',[15 10 15 10])
+
+set(gca,'FontSize',16,'FontName','Times New Roman')
+
+% 2.4 输出最终的图形文件和数据文件
+
+print (gcf,'-dpng','-r300','C:\Users\Administrator\Desktop\Kinetics\KAS-Analysis-99.png')
+
+
+% Part 3. 计算指前因子A，KAS
+
+for m=1:1:95
+
+AKAS(m,1)=Gexp(m,1)*KASUT(m,6)*exp(KASUT(m,4))/8.314
+
+end
+
+% 输出结果整理
+
+for j=1:1:95
+
+Friedman99UT(j,:)=[FriedmanUT(j,:),Afriedman(j,:)]
+
+FWO99UT(j,:)=[OFWUT(j,:),AOFW(j,:)]
+
+KAS99UT(j,:)=[KASUT(j,:),AKAS(j,:)]
+
+end
+
+for i=10:10:90
+
+Friedman10UT(i/10,:)=Friedman99UT(i,:)
+
+FWO10UT(i/10,:)=FWO99UT(i,:)
+
+KAS10UT(i/10,:)=KAS99UT(i,:)
+
+end
+
+% F-G 机理函数SSE排序
+
+IndexValue=sort(ValueUT)
+
+IndexUT=[Index', IndexValue']
+
+% 输出Excel表格
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\IndexUT.xls',IndexUT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\Friedman99UT.xls',Friedman99UT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\FWO99UT.xls',FWO99UT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\KAS99UT.xls',KAS99UT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\Friedman10UT.xls',Friedman10UT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\FWO10UT.xls',FWO10UT)
+
+xlswrite('C:\Users\Administrator\Desktop\Kinetics\KAS10UT.xls',KAS10UT)
+
+clearvars -except X FriedmanUT Afriedman ValueUT Index Fexp Gexp OFWUT AOFW KASUT AKAS afriedman_uncert bfriedman_uncert aFWO_uncert bFWO_uncert aKAS_uncert bKAS_uncert
+
+% 绘制三种动力学模型计算表观活化能变化曲线
+
+addpath('C:\Users\Administrator\Desktop\Kinetics')
+
+figure
+
+axis([0.1 0.9 0 500])
+
+s1=shadedErrorBar(FriedmanUT(:,1),FriedmanUT(:,5),FriedmanUT(:,6),'lineprops','g')
+
+hold on
+
+s2=shadedErrorBar(OFWUT(:,1),OFWUT(:,6),OFWUT(:,7),'lineprops','r')
+
+hold on
+
+s3=shadedErrorBar(KASUT(:,1),KASUT(:,6),KASUT(:,7),'lineprops','b')
+
+hold on
+
+s4=legend('Friedman','FWO','KAS')
+
+set(s4,'box','off','FontSize',16,'FontName','Times New Roman')
+
+% 创建 xlabel
+
+xlabel({'Extent of conversion (α)'},'FontSize',18,'FontName','Times New Roman')
+
+% 创建 ylabel
+
+ylabel({'Activation energy(kJ/mol)'},'FontSize',18,'FontName','Times New Roman')
+
+set(gcf,'unit','centimeters','Position',[15 10 15 10])
+
+set(gca,'FontSize',16,'FontName','Times New Roman')
+
+print (gcf,'-dpng','-r300','C:\Users\Administrator\Desktop\Kinetics\Ea.png')
